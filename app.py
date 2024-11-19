@@ -13,6 +13,12 @@ from services.emotion_detection.predict.bert_emotion_model.bert_emotion_predict 
 # importing text summarization function
 from services.text_summarization.predict.bert_summarizer import summarize
 
+# importing the load function from the load_lstm_sentiment_classifier.py file
+from services.sentiment_analysis.load_model.load_lstm_sentiment_classifier import load_lstm_sentiment_classifier
+
+# importing the lstm_predict function from the lstm_sentiment_classifier.py file
+from services.sentiment_analysis.predict.lstm_predict import lstm_predict
+
 # creating an instance of the Flask class
 app = Flask(__name__)
 
@@ -90,6 +96,36 @@ def predict():
         # make predictions
         result = bert_emotion_predict(data, model, tokenizer, confidence_threshold)
         result = {'emotion': result[0], 'confidence': str(result[1])}
+
+    return jsonify({'data': data, 'result': result})
+
+##################################################
+
+# Sentiment Analysis Models
+
+##################################################
+
+# route for the sentiment analysis models
+@app.route('/predict/sentimentAnalysis', methods=['POST'])
+def predict_sentiment():
+    # get body of the request
+    req = request.json
+
+    # get the text data from the body
+    data = req['data']['text']
+
+    # get the model name from the body
+    model_name = req['model_name']
+
+    # check if the model name is lstm_sentiment_classifier
+    if model_name == 'lstm_sentiment_classifier':
+        # load the model
+        model = load_lstm_sentiment_classifier()
+
+        # make predictions
+        result = lstm_predict(model, data)
+    else:
+        result = 'Model not found'
 
     return jsonify({'data': data, 'result': result})
 
