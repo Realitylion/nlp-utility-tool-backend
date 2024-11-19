@@ -19,6 +19,16 @@ from services.sentiment_analysis.load_model.load_lstm_sentiment_classifier impor
 # importing the lstm_predict function from the lstm_sentiment_classifier.py file
 from services.sentiment_analysis.predict.lstm_predict import lstm_predict
 
+# importing the load function from the load_lstm_sentiment_classifier.py file
+from services.sentiment_analysis.load_model.load_lstm_sentiment_classifier import load_lstm_sentiment_classifier
+
+# importing the lstm_predict function from the lstm_sentiment_classifier.py file
+from services.sentiment_analysis.predict.lstm_predict import lstm_predict
+
+#importing keyword extraction function
+from services.named_extraction.named_entity import extract_named_entities
+from services.noun_extraction.noun_extraction import extract_noun_phrases
+
 # creating an instance of the Flask class
 app = Flask(__name__)
 
@@ -146,6 +156,28 @@ def text_summarization():
 
     # make predictions
     result = summarize(data, num_sentences)
+
+    return jsonify({'data': data, 'result': result})
+
+@app.route('/named/namedExtraction', methods=['POST'])
+def keyword_extraction():
+    # get body of the request 
+    result = request.json
+    data = result['data']['text']
+
+    # make predictions 
+    result = extract_named_entities(data)
+
+    return jsonify({'data': data, 'result': result})
+
+@app.route('/noun/nounExtraction', methods=['POST'])
+def noun_extraction():
+    # get body of the request   
+    result = request.json
+    data = result['data']['text']
+
+    # make predictions  
+    result = extract_noun_phrases(data)
 
     return jsonify({'data': data, 'result': result})
 
